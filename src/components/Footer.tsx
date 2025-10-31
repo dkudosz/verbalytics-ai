@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { Facebook, Twitter, Linkedin, Github } from "lucide-react";
 
 const Footer = () => {
@@ -21,12 +21,12 @@ const Footer = () => {
             <h4 className="font-semibold mb-4">Product</h4>
             <ul className="space-y-2">
               <li>
-                <Link to="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link href="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                   Features
                 </Link>
               </li>
               <li>
-                <Link to="/pricing" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link href="/pricing" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                   Pricing
                 </Link>
               </li>
@@ -43,12 +43,12 @@ const Footer = () => {
             <h4 className="font-semibold mb-4">Company</h4>
             <ul className="space-y-2">
               <li>
-                <Link to="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link href="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                   About
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link href="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                   Contact
                 </Link>
               </li>

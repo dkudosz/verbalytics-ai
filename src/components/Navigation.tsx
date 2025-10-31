@@ -1,13 +1,15 @@
-import { Link, useLocation } from "react-router-dom";
+"use client";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 
 const Navigation = () => {
-  const location = useLocation();
+  const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) => pathname === path;
 
   const navLinks = [
     { path: "/", label: "Home" },
@@ -21,7 +23,7 @@ const Navigation = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+          <Link href="/" className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
             SaaSify
           </Link>
 
@@ -30,7 +32,7 @@ const Navigation = () => {
             {navLinks.map((link) => (
               <Link
                 key={link.path}
-                to={link.path}
+                href={link.path}
                 className={`text-sm font-medium transition-colors hover:text-primary ${
                   isActive(link.path) ? "text-primary" : "text-foreground"
                 }`}
@@ -38,7 +40,7 @@ const Navigation = () => {
                 {link.label}
               </Link>
             ))}
-            <Link to="/signin">
+            <Link href="/signin">
               <Button className="bg-gradient-primary shadow-glow hover:opacity-90 transition-opacity">
                 Sign In
               </Button>
@@ -61,7 +63,7 @@ const Navigation = () => {
               {navLinks.map((link) => (
                 <Link
                   key={link.path}
-                  to={link.path}
+                  href={link.path}
                   className={`text-sm font-medium transition-colors hover:text-primary ${
                     isActive(link.path) ? "text-primary" : "text-foreground"
                   }`}
@@ -70,7 +72,7 @@ const Navigation = () => {
                   {link.label}
                 </Link>
               ))}
-              <Link to="/signin" onClick={() => setMobileMenuOpen(false)}>
+              <Link href="/signin" onClick={() => setMobileMenuOpen(false)}>
                 <Button className="w-full bg-gradient-primary shadow-glow hover:opacity-90 transition-opacity">
                   Sign In
                 </Button>
