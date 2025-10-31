@@ -35,12 +35,15 @@ declare namespace __next_route_internal_types__ {
     | `/`
     | `/about`
     | `/account`
+    | `/account/settings`
     | `/admin/db-status`
+    | `/api/auth/callback`
+    | `/api/auth/logout`
+    | `/api/auth/user-role`
     | `/api/health/db`
     | `/contact`
     | `/dashboard`
     | `/pricing`
-    | `/settings`
     | `/signin`
   type DynamicRoutes<T extends string = string> = never
 

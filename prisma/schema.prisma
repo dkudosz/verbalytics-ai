@@ -7,10 +7,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  subscriber
+  admin
+}
+
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
   name      String?
+  role      UserRole @default(subscriber)
+  image     String?
+  supabaseId String  @unique @map("supabase_id")
+  metadata  Json?
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 

@@ -1,15 +1,26 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/lib/auth/hooks";
+import { createClient } from "@/lib/supabase/client";
 
 const Navigation = () => {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user } = useAuth();
+  const supabase = createClient();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const isActive = (path: string) => pathname === path;
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.push("/");
+    router.refresh();
+  };
 
   const navLinks = [
     { path: "/", label: "Home" },
@@ -40,11 +51,22 @@ const Navigation = () => {
                 {link.label}
               </Link>
             ))}
-            <Link href="/signin">
-              <Button className="bg-gradient-primary shadow-glow hover:opacity-90 transition-opacity">
-                Sign In
-              </Button>
-            </Link>
+            {user ? (
+              <>
+                <Link href="/dashboard">
+                  <Button variant="ghost">Dashboard</Button>
+                </Link>
+                <Button variant="outline" onClick={handleSignOut}>
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <Link href="/signin">
+                <Button className="bg-gradient-primary shadow-glow hover:opacity-90 transition-opacity">
+                  Sign In
+                </Button>
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -72,11 +94,22 @@ const Navigation = () => {
                   {link.label}
                 </Link>
               ))}
-              <Link href="/signin" onClick={() => setMobileMenuOpen(false)}>
-                <Button className="w-full bg-gradient-primary shadow-glow hover:opacity-90 transition-opacity">
-                  Sign In
-                </Button>
-              </Link>
+              {user ? (
+                <>
+                  <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-start">Dashboard</Button>
+                  </Link>
+                  <Button variant="outline" className="w-full" onClick={handleSignOut}>
+                    Sign Out
+                  </Button>
+                </>
+              ) : (
+                <Link href="/signin" onClick={() => setMobileMenuOpen(false)}>
+                  <Button className="w-full bg-gradient-primary shadow-glow hover:opacity-90 transition-opacity">
+                    Sign In
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
         )}

@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "prisma:generate": "dotenv -e .env.local -- prisma generate",
+    "prisma:generate:clean": "node scripts/fix-prisma.js",
     "prisma:migrate": "dotenv -e .env.local -- prisma migrate dev",
     "prisma:studio": "dotenv -e .env.local -- prisma studio",
     "db:test": "node scripts/test-db-connection.js"

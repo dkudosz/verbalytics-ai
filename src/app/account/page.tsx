@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { User } from "lucide-react";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import { useAuth } from "@/lib/auth/hooks";
 
 export default function Page() {
   const { toast } = useToast();
@@ -17,6 +19,7 @@ export default function Page() {
   };
 
   return (
+    <ProtectedRoute allowedRoles={["subscriber", "admin"]}>
     <div className="min-h-screen bg-background">
       <main className="pt-24 pb-12 px-4">
         <div className="container mx-auto max-w-4xl">
@@ -109,6 +112,7 @@ export default function Page() {
         </div>
       </main>
     </div>
+    </ProtectedRoute>
   );
 }
 

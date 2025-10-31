@@ -30,7 +30,33 @@ export async function middleware(request: NextRequest) {
   );
 
   // Refresh session if expired - required for Server Components
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { pathname } = request.nextUrl;
+
+  // Protected routes that require authentication
+  const protectedRoutes = ["/dashboard", "/account", "/admin"];
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
+
+  // Admin-only routes
+  const adminRoutes = ["/admin"];
+  const isAdminRoute = adminRoutes.some((route) => pathname.startsWith(route));
+
+  if (isProtectedRoute && !user) {
+    // Redirect to sign in if not authenticated
+    const signInUrl = new URL("/signin", request.url);
+    signInUrl.searchParams.set("redirect", pathname);
+    return NextResponse.redirect(signInUrl);
+  }
+
+  if (isAdminRoute && user) {
+    // Check if user is admin (we'll verify in the page component for better UX)
+    // Middleware just ensures they're authenticated
+  }
 
   return supabaseResponse;
 }
