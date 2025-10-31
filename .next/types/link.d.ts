@@ -35,6 +35,8 @@ declare namespace __next_route_internal_types__ {
     | `/`
     | `/about`
     | `/account`
+    | `/admin/db-status`
+    | `/api/health/db`
     | `/contact`
     | `/dashboard`
     | `/pricing`
