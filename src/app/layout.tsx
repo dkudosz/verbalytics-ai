@@ -5,8 +5,8 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "SaaSify",
-  description: "Empowering businesses with innovative SaaS solutions.",
+  title: "Verbalytics AI",
+  description: "AI-powered call transcription and agent analysis for customer support teams. Automatically transcribe calls, analyze agent performance, and get actionable insights.",
 };
 
 export default function RootLayout({

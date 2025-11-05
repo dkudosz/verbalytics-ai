@@ -9,10 +9,10 @@ const Footer = () => {
           {/* Brand */}
           <div>
             <h3 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4">
-              SaaSify
+              Verbalytics AI
             </h3>
             <p className="text-sm text-muted-foreground">
-              Empowering businesses with innovative SaaS solutions.
+              AI-powered call transcription and agent analysis for customer support teams.
             </p>
           </div>
 
@@ -80,7 +80,7 @@ const Footer = () => {
 
         <div className="border-t border-border mt-8 pt-8 flex flex-col md:flex-row items-center justify-between">
           <p className="text-sm text-muted-foreground">
-            © 2025 SaaSify. All rights reserved.
+            © 2025 Verbalytics AI. All rights reserved.
           </p>
           <div className="flex gap-4 mt-4 md:mt-0">
             <a href="#" className="text-muted-foreground hover:text-primary transition-colors">

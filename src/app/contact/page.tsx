@@ -23,7 +23,7 @@ export default function Page() {
   };
 
   const contactInfo = [
-    { icon: Mail, title: "Email", content: "hello@saasify.com", link: "mailto:hello@saasify.com" },
+    { icon: Mail, title: "Email", content: "hello@verbalytics.ai", link: "mailto:hello@verbalytics.ai" },
     { icon: Phone, title: "Phone", content: "+1 (555) 123-4567", link: "tel:+15551234567" },
     { icon: MapPin, title: "Office", content: "123 Business Ave, San Francisco, CA 94102", link: "#" },
   ];

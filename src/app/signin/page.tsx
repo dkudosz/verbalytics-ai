@@ -34,7 +34,7 @@ function SignInForm() {
 
       if (error) throw error;
 
-      toast({ title: "Sign in successful!", description: "Welcome back to SaaSify." });
+      toast({ title: "Sign in successful!", description: "Welcome back to Verbalytics AI." });
       router.push(redirectTo);
       router.refresh();
     } catch (error: any) {
@@ -117,7 +117,7 @@ function SignInForm() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent inline-block mb-2">
-            SaaSify
+            Verbalytics AI
           </Link>
           <p className="text-muted-foreground">Welcome back! Please sign in to continue.</p>
         </div>

@@ -35,7 +35,7 @@ const Navigation = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-            SaaSify
+            Verbalytics AI
           </Link>
 
           {/* Desktop Navigation */}
