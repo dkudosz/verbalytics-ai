@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 export default function Page() {
   const { toast } = useToast();
@@ -26,9 +27,9 @@ export default function Page() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="pt-24 pb-12 px-4">
-        <div className="container mx-auto max-w-4xl">
+    <ProtectedRoute allowedRoles={["subscriber", "admin"]}>
+      <main className="pt-24 pb-12 px-4 md:px-6 lg:px-8">
+        <div className="container mx-auto max-w-7xl">
           <div className="mb-8 animate-fade-up">
             <h1 className="text-4xl font-bold mb-2">Settings</h1>
             <p className="text-muted-foreground">Manage your application preferences and configurations.</p>
@@ -112,7 +113,7 @@ export default function Page() {
           </div>
         </div>
       </main>
-    </div>
+    </ProtectedRoute>
   );
 }
 

@@ -1,6 +1,5 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { TrendingUp, Users, DollarSign, Activity } from "lucide-react";
-import Link from "next/link";
 import { requireAuth } from "@/lib/auth/utils";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
@@ -17,8 +16,8 @@ export default async function Page() {
   return (
     <ProtectedRoute allowedRoles={["subscriber", "admin"]}>
       <div className="min-h-screen bg-background">
-        <main className="pt-24 pb-12 px-4">
-          <div className="container mx-auto">
+        <main className="pt-24 pb-12 px-4 md:px-6 lg:px-8">
+          <div className="container mx-auto max-w-7xl">
             <div className="mb-8 animate-fade-up">
               <h1 className="text-4xl font-bold mb-2">Dashboard</h1>
               <p className="text-muted-foreground">Welcome back! Here's your overview.</p>
@@ -41,46 +40,26 @@ export default async function Page() {
               ))}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <Card className="lg:col-span-2 shadow-card">
-                <CardHeader>
-                  <h2 className="text-xl font-semibold">Recent Activity</h2>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {[
-                      { action: "New user registration", time: "2 minutes ago" },
-                      { action: "Payment received", time: "15 minutes ago" },
-                      { action: "New feature deployed", time: "1 hour ago" },
-                      { action: "System update completed", time: "3 hours ago" },
-                    ].map((activity, index) => (
-                      <div key={index} className="flex items-center justify-between py-3 border-b border-border last:border-0">
-                        <span className="text-sm">{activity.action}</span>
-                        <span className="text-xs text-muted-foreground">{activity.time}</span>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="shadow-card">
-                <CardHeader>
-                  <h2 className="text-xl font-semibold">Quick Actions</h2>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <Link href="/account" className="block p-3 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors">
-                      <p className="font-medium">My Account</p>
-                      <p className="text-xs text-muted-foreground">Manage your profile</p>
-                    </Link>
-                    <div className="block p-3 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors cursor-pointer">
-                      <p className="font-medium">Support</p>
-                      <p className="text-xs text-muted-foreground">Get help from our team</p>
+            <Card className="shadow-card">
+              <CardHeader>
+                <h2 className="text-xl font-semibold">Recent Activity</h2>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {[
+                    { action: "New user registration", time: "2 minutes ago" },
+                    { action: "Payment received", time: "15 minutes ago" },
+                    { action: "New feature deployed", time: "1 hour ago" },
+                    { action: "System update completed", time: "3 hours ago" },
+                  ].map((activity, index) => (
+                    <div key={index} className="flex items-center justify-between py-3 border-b border-border last:border-0">
+                      <span className="text-sm">{activity.action}</span>
+                      <span className="text-xs text-muted-foreground">{activity.time}</span>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </main>
       </div>
