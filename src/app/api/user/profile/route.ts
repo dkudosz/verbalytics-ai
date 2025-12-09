@@ -19,17 +19,20 @@ export async function GET() {
         // If user doesn't exist in database, sync them
         if (!dbUser) {
             try {
-                console.log("User not found in database, syncing...", { supabaseId: supabaseUser.id, email: supabaseUser.email });
-                await syncUserToDatabase(supabaseUser);
-                dbUser = await getUserWithRole();
+                const syncedUser = await syncUserToDatabase(supabaseUser);
+                // Use the synced user directly instead of querying again
+                dbUser = {
+                    id: syncedUser.id,
+                    email: syncedUser.email,
+                    name: syncedUser.name,
+                    role: syncedUser.role,
+                    image: syncedUser.image,
+                };
 
                 if (!dbUser) {
-                    console.error("User still not found after sync");
                     return NextResponse.json({ error: "User not found after sync" }, { status: 404 });
                 }
-                console.log("User synced successfully", { userId: dbUser.id });
             } catch (syncError: any) {
-                console.error("Error syncing user:", syncError);
                 return NextResponse.json(
                     {
                         error: "Failed to sync user to database",
@@ -57,19 +60,16 @@ export async function GET() {
             return NextResponse.json({ error: "User not found" }, { status: 404 });
         }
 
-        // Extract company and role from metadata
+        // Extract company from metadata
         const metadata = fullUser.metadata as Record<string, any> | null;
         const company = metadata?.company || "";
-        const roleString = metadata?.role || "";
 
         return NextResponse.json({
             name: fullUser.name || "",
             email: fullUser.email,
             company: company,
-            role: roleString,
         });
     } catch (error: any) {
-        console.error("Error fetching user profile:", error);
         return NextResponse.json(
             {
                 error: "Failed to fetch profile",
@@ -103,7 +103,7 @@ export async function PATCH(request: NextRequest) {
         }
 
         const body = await request.json();
-        const { name, email, company, role } = body;
+        const { name, email, company } = body;
 
         // Validate required fields
         if (!name || !email) {
@@ -121,11 +121,10 @@ export async function PATCH(request: NextRequest) {
 
         const currentMetadata = (currentUser?.metadata as Record<string, any>) || {};
 
-        // Update metadata with company and role
+        // Update metadata with company
         const updatedMetadata = {
             ...currentMetadata,
             company: company || "",
-            role: role || "",
         };
 
         // Update user in database
@@ -145,21 +144,17 @@ export async function PATCH(request: NextRequest) {
             },
         });
 
-        // Extract company and role from metadata for response
+        // Extract company from metadata for response
         const metadata = updatedUser.metadata as Record<string, any> | null;
         const companyValue = metadata?.company || "";
-        const roleValue = metadata?.role || "";
 
         return NextResponse.json({
             name: updatedUser.name || "",
             email: updatedUser.email,
             company: companyValue,
-            role: roleValue,
             message: "Profile updated successfully",
         });
     } catch (error: any) {
-        console.error("Error updating user profile:", error);
-
         // Handle unique constraint violation (email already exists)
         if (error.code === "P2002" && error.meta?.target?.includes("email")) {
             return NextResponse.json(

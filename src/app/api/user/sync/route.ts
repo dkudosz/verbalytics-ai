@@ -24,7 +24,6 @@ export async function POST() {
       },
     });
   } catch (error: any) {
-    console.error("Error syncing user:", error);
     return NextResponse.json(
       { 
         error: "Failed to sync user",

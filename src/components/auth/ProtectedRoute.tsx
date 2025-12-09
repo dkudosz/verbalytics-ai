@@ -26,12 +26,22 @@ export default function ProtectedRoute({
     if (user && allowedRoles) {
       // Fetch user role from API
       fetch("/api/auth/user-role")
-        .then((res) => res.json())
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error("Failed to fetch user role");
+          }
+          return res.json();
+        })
         .then((data) => {
+          if (data.error) {
+            setRoleLoading(false);
+            return;
+          }
+
           setRole(data.role);
           setRoleLoading(false);
 
-          if (!allowedRoles.includes(data.role)) {
+          if (data.role && !allowedRoles.includes(data.role)) {
             router.push("/dashboard");
           }
         })
@@ -55,10 +65,13 @@ export default function ProtectedRoute({
     return null;
   }
 
-  if (allowedRoles && role && !allowedRoles.includes(role as "subscriber" | "admin")) {
+  if (
+    allowedRoles &&
+    role &&
+    !allowedRoles.includes(role as "subscriber" | "admin")
+  ) {
     return null;
   }
 
   return <>{children}</>;
 }
-
