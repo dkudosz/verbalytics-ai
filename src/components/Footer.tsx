@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Facebook, Twitter, Linkedin, Github } from "lucide-react";
 
 const Footer = () => {
@@ -8,7 +9,14 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div>
-            <h3 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4">
+            <h3 className="flex items-center gap-2 text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4">
+              <Image 
+                src="/verbalytics-ai-logo-main.png" 
+                alt="Verbalytics AI" 
+                width={32} 
+                height={32}
+                className="object-contain"
+              />
               Verbalytics AI
             </h3>
             <p className="text-sm text-muted-foreground">

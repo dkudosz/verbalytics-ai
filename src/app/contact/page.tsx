@@ -6,16 +6,65 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { Mail, MapPin } from "lucide-react";
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 
 export default function Page() {
   const { toast } = useToast();
+  const { executeRecaptcha } = useGoogleReCaptcha();
   const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({ title: "Message sent!", description: "We'll get back to you as soon as possible." });
-    setFormData({ name: "", email: "", subject: "", message: "" });
+    
+    if (!executeRecaptcha) {
+      toast({
+        title: "Error",
+        description: "reCAPTCHA is not loaded. Please refresh the page.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Execute reCAPTCHA
+      const recaptchaToken = await executeRecaptcha("contact_form");
+
+      // Submit form to API
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...formData,
+          recaptchaToken,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to send message");
+      }
+
+      toast({
+        title: "Message sent!",
+        description: "We'll get back to you as soon as possible.",
+      });
+      setFormData({ name: "", email: "", subject: "", message: "" });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to send message. Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -24,8 +73,7 @@ export default function Page() {
 
   const contactInfo = [
     { icon: Mail, title: "Email", content: "hello@verbalytics.ai", link: "mailto:hello@verbalytics.ai" },
-    { icon: Phone, title: "Phone", content: "+1 (555) 123-4567", link: "tel:+15551234567" },
-    { icon: MapPin, title: "Office", content: "123 Business Ave, San Francisco, CA 94102", link: "#" },
+    { icon: MapPin, title: "Office", content: "Dublin, Ireland", link: "#" },
   ];
 
   return (
@@ -63,8 +111,12 @@ export default function Page() {
                     <Label htmlFor="message">Message</Label>
                     <Textarea id="message" name="message" value={formData.message} onChange={handleChange} placeholder="Tell us more about your inquiry..." rows={6} required />
                   </div>
-                  <Button type="submit" className="w-full bg-gradient-primary shadow-glow hover:opacity-90 transition-opacity">
-                    Send Message
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-gradient-primary shadow-glow hover:opacity-90 transition-opacity"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Sending..." : "Send Message"}
                   </Button>
                 </form>
               </CardContent>
@@ -91,11 +143,10 @@ export default function Page() {
 
               <Card className="shadow-card bg-gradient-secondary">
                 <CardContent className="pt-6">
-                  <h3 className="font-semibold mb-2">Business Hours</h3>
+                  <h3 className="font-semibold mb-2">Support Available:</h3>
                   <div className="space-y-1 text-sm text-muted-foreground">
-                    <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
-                    <p>Saturday: 10:00 AM - 4:00 PM</p>
-                    <p>Sunday: Closed</p>
+                    <p>Monday - Saturday: 7:00 AM - 10 PM</p>
+                    <p>Sunday: Limited</p>
                   </div>
                 </CardContent>
               </Card>

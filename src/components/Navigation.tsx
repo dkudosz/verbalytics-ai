@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
@@ -34,7 +35,14 @@ const Navigation = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+          <Link href="/" className="flex items-center gap-2 text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+            <Image 
+              src="/verbalytics-ai-logo-main.png" 
+              alt="Verbalytics AI" 
+              width={32} 
+              height={32}
+              className="object-contain"
+            />
             Verbalytics AI
           </Link>
 

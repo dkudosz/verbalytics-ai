@@ -1,6 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
 import ValuesGrid from "@/components/sections/about/ValuesGrid";
-import TeamGrid from "@/components/sections/about/TeamGrid";
 import StatsBar from "@/components/sections/about/StatsBar";
 import { Target, Heart, Lightbulb, Users } from "lucide-react";
 import type { Metadata } from "next";
@@ -80,13 +79,6 @@ export default function Page() {
     },
   ];
 
-  const team = [
-    { name: "Alex Rivera", role: "CEO & Co-Founder", initials: "AR" },
-    { name: "Jordan Lee", role: "CTO & Co-Founder", initials: "JL" },
-    { name: "Sam Parker", role: "Head of Product", initials: "SP" },
-    { name: "Morgan Taylor", role: "Head of Engineering", initials: "MT" },
-  ];
-
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -156,8 +148,6 @@ export default function Page() {
             </div>
 
             <ValuesGrid values={values} />
-
-            <TeamGrid team={team} />
 
             <StatsBar />
           </div>
