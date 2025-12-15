@@ -3,6 +3,7 @@ import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Bot } from "lucide-react";
 import type { Metadata } from "next";
+import { CsvUpload } from "@/components/dashboard/CsvUpload";
 
 export const metadata: Metadata = {
   title: "Agents | Dashboard | Verbalytics AI",
@@ -32,14 +33,18 @@ export default async function AgentsPage() {
               <p className="text-muted-foreground">Manage and configure your AI agents.</p>
             </div>
 
-            <Card className="shadow-card">
-              <CardHeader>
-                <h2 className="text-xl font-semibold">Agent Management</h2>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">Agent management interface coming soon.</p>
-              </CardContent>
-            </Card>
+            <div className="space-y-6">
+              <CsvUpload />
+
+              <Card className="shadow-card">
+                <CardHeader>
+                  <h2 className="text-xl font-semibold">Agent Management</h2>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">Agent management interface coming soon.</p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </main>
       </div>
