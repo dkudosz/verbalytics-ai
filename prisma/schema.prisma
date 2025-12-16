@@ -22,7 +22,28 @@ model User {
   metadata  Json?
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+  agents    Agent[]
 
   @@map("users")
+}
+
+model Agent {
+  id            String   @id @default(uuid())
+  userId        String   @map("user_id")
+  agentId       String   @map("agent_id")
+  agentName     String   @map("agent_name")
+  agentSurname  String   @map("agent_surname")
+  agentEmail    String   @map("agent_email")
+  agentPhone    String?  @map("agent_phone")
+  agentSlack    String?  @map("agent_slack")
+  agentDiscord  String?  @map("agent_discord")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, agentId])
+  @@index([userId])
+  @@map("agents")
 }
 

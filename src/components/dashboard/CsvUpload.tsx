@@ -4,10 +4,14 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload, FileText, Loader2 } from "lucide-react";
+import { Upload, FileText, Loader2, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-export function CsvUpload() {
+interface CsvUploadProps {
+  onUploadSuccess?: () => void;
+}
+
+export function CsvUpload({ onUploadSuccess }: CsvUploadProps) {
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
@@ -52,19 +56,47 @@ export function CsvUpload() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to upload CSV file");
+        const errorMessage = data.error || "Failed to upload CSV file";
+        const errorDetails = data.details;
+        throw new Error(
+          errorDetails && Array.isArray(errorDetails)
+            ? `${errorMessage}\n${errorDetails.slice(0, 3).join("\n")}${errorDetails.length > 3 ? `\n...and ${errorDetails.length - 3} more errors` : ""}`
+            : errorMessage
+        );
       }
+
+      const successMessage =
+        data.errors && data.errors.length > 0
+          ? `Uploaded ${data.processed || 0} agents with ${data.errors.length} validation warning(s).`
+          : data.message || `Successfully uploaded ${data.processed || 0} agents.`;
 
       toast({
         title: "Upload successful",
-        description: data.message || `Successfully uploaded ${data.processed || 0} agents.`,
+        description: successMessage,
       });
+
+      // Show warnings if there are validation errors
+      if (data.errors && data.errors.length > 0) {
+        setTimeout(() => {
+          toast({
+            title: "Validation warnings",
+            description: `${data.errors.length} row(s) had validation issues. Check the console for details.`,
+            variant: "default",
+          });
+        }, 1000);
+        console.warn("CSV validation warnings:", data.errors);
+      }
 
       // Reset file input
       setFile(null);
       const fileInput = document.getElementById("csv-upload") as HTMLInputElement;
       if (fileInput) {
         fileInput.value = "";
+      }
+
+      // Trigger refresh callback
+      if (onUploadSuccess) {
+        onUploadSuccess();
       }
     } catch (error: any) {
       toast({
@@ -85,10 +117,28 @@ export function CsvUpload() {
           Upload Agents CSV
         </CardTitle>
         <CardDescription>
-          Upload a CSV file to import agents. The CSV should contain columns for agent information.
+          Upload a CSV file to import agents. The CSV should contain columns: agentId, agentName, agentSurname, agentEmail, agentPhone, agentSlack, agentDiscord.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        <div className="flex items-center gap-2 mb-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              const link = document.createElement("a");
+              link.href = "/docs/agentListExample.csv";
+              link.download = "agentListExample.csv";
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }}
+            className="flex items-center gap-2"
+          >
+            <Download className="h-4 w-4" />
+            Download Example CSV
+          </Button>
+        </div>
         <div className="flex items-center gap-4">
           <Input
             id="csv-upload"
@@ -101,12 +151,12 @@ export function CsvUpload() {
           <Button
             onClick={handleUpload}
             disabled={!file || isUploading}
-            className="min-w-[120px]"
+            className="min-w-[140px]"
           >
             {isUploading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Uploading...
+                Validating...
               </>
             ) : (
               <>

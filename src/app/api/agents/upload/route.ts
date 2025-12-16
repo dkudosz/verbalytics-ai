@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, getUserWithRole } from "@/lib/auth/utils";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 // CSV parser that handles quoted fields with commas
 function parseCSVLine(line: string): string[] {
@@ -34,28 +37,17 @@ function parseCSVLine(line: string): string[] {
   return result;
 }
 
-function parseCSV(csvText: string): Array<Record<string, string>> {
-  const lines = csvText.split(/\r?\n/).filter((line) => line.trim());
-  if (lines.length === 0) return [];
-
-  // Parse header
-  const headers = parseCSVLine(lines[0]).map((h) => h.replace(/^"|"$/g, ""));
-  
-  // Parse rows
-  const rows: Array<Record<string, string>> = [];
-  for (let i = 1; i < lines.length; i++) {
-    const values = parseCSVLine(lines[i]).map((v) => v.replace(/^"|"$/g, ""));
-    if (values.length > 0 && values.some((v) => v)) {
-      const row: Record<string, string> = {};
-      headers.forEach((header, index) => {
-        row[header] = values[index] || "";
-      });
-      rows.push(row);
-    }
+// Email validation function
+function isValidEmail(email: string): boolean {
+  if (!email || email.trim() === "") {
+    return false;
   }
 
-  return rows;
+  // RFC 5322 compliant email regex (simplified but covers most cases)
+  const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+  return emailRegex.test(email.trim());
 }
+
 
 export async function POST(request: NextRequest) {
   try {
@@ -87,29 +79,172 @@ export async function POST(request: NextRequest) {
 
     // Read file content
     const text = await file.text();
-    
-    // Parse CSV
-    const rows = parseCSV(text);
 
-    if (rows.length === 0) {
-      return NextResponse.json({ error: "CSV file is empty or invalid" }, { status: 400 });
+    // Parse CSV
+    const lines = text.split(/\r?\n/).filter((line) => line.trim());
+    if (lines.length === 0) {
+      return NextResponse.json({ error: "CSV file is empty" }, { status: 400 });
     }
 
-    // TODO: Process and store agents in database
-    // For now, we'll just return the parsed data
-    // You can add database operations here to store the agents
+    // Parse header
+    const headers = parseCSVLine(lines[0]).map((h) => h.replace(/^"|"$/g, "").trim());
+
+    // Expected columns
+    const expectedColumns = [
+      "agentId",
+      "agentName",
+      "agentSurname",
+      "agentEmail",
+      "agentPhone",
+      "agentSlack",
+      "agentDiscord",
+    ];
+    const requiredColumns = ["agentId", "agentName", "agentSurname", "agentEmail"];
+
+    // Validate headers
+    const missingColumns = expectedColumns.filter((col) => !headers.includes(col));
+    if (missingColumns.length > 0) {
+      return NextResponse.json(
+        {
+          error: `Missing required columns: ${missingColumns.join(", ")}`,
+          expectedColumns,
+        },
+        { status: 400 }
+      );
+    }
+
+    // Parse rows
+    const rows: Array<Record<string, string>> = [];
+    const errors: string[] = [];
+
+    for (let i = 1; i < lines.length; i++) {
+      const values = parseCSVLine(lines[i]).map((v) => v.replace(/^"|"$/g, "").trim());
+
+      // Skip empty rows
+      if (values.length === 0 || !values.some((v) => v)) {
+        continue;
+      }
+
+      // Skip template/metadata rows (rows where all non-empty values are "required")
+      const nonEmptyValues = values.filter((v) => v);
+      if (nonEmptyValues.length > 0 && nonEmptyValues.every((v) => v.toLowerCase() === "required")) {
+        continue;
+      }
+
+      const row: Record<string, string> = {};
+      headers.forEach((header, index) => {
+        row[header] = values[index] || "";
+      });
+
+      // Validate required fields
+      const missingFields = requiredColumns.filter((col) => !row[col] || row[col].trim() === "");
+      if (missingFields.length > 0) {
+        errors.push(`Row ${i + 1}: Missing required fields: ${missingFields.join(", ")}`);
+        continue;
+      }
+
+      // Validate email format (agentEmail is required, so it will always be present at this point)
+      if (!isValidEmail(row.agentEmail)) {
+        errors.push(`Row ${i + 1}: Invalid email format for agentEmail: "${row.agentEmail}"`);
+        continue;
+      }
+
+      rows.push(row);
+    }
+
+    if (errors.length > 0 && rows.length === 0) {
+      return NextResponse.json(
+        {
+          error: "All rows have validation errors",
+          details: errors,
+        },
+        { status: 400 }
+      );
+    }
+
+    if (rows.length === 0) {
+      return NextResponse.json({ error: "No valid rows found in CSV file" }, { status: 400 });
+    }
+
+    // Save agents to database
+    const savedAgents = [];
+    const saveErrors: string[] = [];
+
+    for (const row of rows) {
+      try {
+        // Check if agent with same agentId already exists for this user
+        // Note: If you get "Cannot read properties of undefined", you need to:
+        // 1. Stop the dev server
+        // 2. Run: npm run prisma:generate
+        // 3. Make sure the database migration has been run (see AGENTS_TABLE_SETUP.md)
+        const existingAgent = await (prisma as any).agent?.findUnique({
+          where: {
+            userId_agentId: {
+              userId: user.id,
+              agentId: row.agentId,
+            },
+          },
+        });
+
+        if (existingAgent) {
+          // Update existing agent
+          const updatedAgent = await prisma.agent.update({
+            where: { id: existingAgent.id },
+            data: {
+              agentName: row.agentName,
+              agentSurname: row.agentSurname,
+              agentEmail: row.agentEmail,
+              agentPhone: row.agentPhone || null,
+              agentSlack: row.agentSlack || null,
+              agentDiscord: row.agentDiscord || null,
+            },
+          });
+          savedAgents.push(updatedAgent);
+        } else {
+          // Create new agent
+          const newAgent = await prisma.agent.create({
+            data: {
+              userId: user.id,
+              agentId: row.agentId,
+              agentName: row.agentName,
+              agentSurname: row.agentSurname,
+              agentEmail: row.agentEmail,
+              agentPhone: row.agentPhone || null,
+              agentSlack: row.agentSlack || null,
+              agentDiscord: row.agentDiscord || null,
+            },
+          });
+          savedAgents.push(newAgent);
+        }
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        saveErrors.push(`Failed to save agent ${row.agentId}: ${errorMessage}`);
+      }
+    }
+
+    if (savedAgents.length === 0 && saveErrors.length > 0) {
+      return NextResponse.json(
+        {
+          error: "Failed to save agents to database",
+          details: saveErrors,
+        },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({
-      message: "CSV file processed successfully",
-      processed: rows.length,
-      data: rows,
+      message: "CSV file processed and saved successfully",
+      processed: savedAgents.length,
+      errors: errors.length > 0 || saveErrors.length > 0 ? [...errors, ...saveErrors] : undefined,
+      data: savedAgents,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("CSV upload error:", error);
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(
       {
         error: "Failed to process CSV file",
-        details: process.env.NODE_ENV === "development" ? error.message : undefined,
+        details: process.env.NODE_ENV === "development" ? errorMessage : undefined,
       },
       { status: 500 }
     );

@@ -1,16 +1,17 @@
 import { requireAuth } from "@/lib/auth/utils";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Bot } from "lucide-react";
 import type { Metadata } from "next";
-import { CsvUpload } from "@/components/dashboard/CsvUpload";
+import { CsvUploadWrapper } from "@/components/dashboard/CsvUploadWrapper";
 
 export const metadata: Metadata = {
   title: "Agents | Dashboard | Verbalytics AI",
-  description: "Manage and configure your AI agents for call transcription and analysis.",
+  description:
+    "Manage and configure your AI agents for call transcription and analysis.",
   openGraph: {
     title: "Agents | Dashboard | Verbalytics AI",
-    description: "Manage and configure your AI agents for call transcription and analysis.",
+    description:
+      "Manage and configure your AI agents for call transcription and analysis.",
   },
   alternates: {
     canonical: "https://verbalytics.ai/dashboard/agents",
@@ -30,20 +31,13 @@ export default async function AgentsPage() {
                 <Bot className="h-8 w-8 text-primary" />
                 <h1 className="text-4xl font-bold">Agents</h1>
               </div>
-              <p className="text-muted-foreground">Manage and configure your AI agents.</p>
+              <p className="text-muted-foreground">
+                Manage and configure your agents.
+              </p>
             </div>
 
             <div className="space-y-6">
-              <CsvUpload />
-
-              <Card className="shadow-card">
-                <CardHeader>
-                  <h2 className="text-xl font-semibold">Agent Management</h2>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">Agent management interface coming soon.</p>
-                </CardContent>
-              </Card>
+              <CsvUploadWrapper />
             </div>
           </div>
         </main>
@@ -51,6 +45,3 @@ export default async function AgentsPage() {
     </ProtectedRoute>
   );
 }
-
-
-
