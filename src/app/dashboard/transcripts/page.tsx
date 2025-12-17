@@ -12,10 +12,12 @@ const prisma = new PrismaClient();
 
 export const metadata: Metadata = {
   title: "Transcripts | Dashboard | Verbalytics AI",
-  description: "Browse and filter your call transcripts by date range or Transcript ID.",
+  description:
+    "Browse and filter your call transcripts by date range or Transcript ID.",
   openGraph: {
     title: "Transcripts | Dashboard | Verbalytics AI",
-    description: "Browse and filter your call transcripts by date range or Transcript ID.",
+    description:
+      "Browse and filter your call transcripts by date range or Transcript ID.",
   },
   alternates: {
     canonical: "https://verbalytics.ai/dashboard/transcripts",
@@ -28,7 +30,11 @@ type SearchParams = {
   transcriptId?: string;
 };
 
-export default async function TranscriptsPage({ searchParams }: { searchParams: SearchParams }) {
+export default async function TranscriptsPage({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
   await requireAuth();
   const user = await getUserWithRole();
 
@@ -36,9 +42,10 @@ export default async function TranscriptsPage({ searchParams }: { searchParams: 
     return null;
   }
 
-  const fromParam = searchParams?.from;
-  const toParam = searchParams?.to;
-  const transcriptIdQuery = searchParams?.transcriptId?.trim();
+  const resolvedSearchParams = await searchParams;
+  const fromParam = resolvedSearchParams?.from;
+  const toParam = resolvedSearchParams?.to;
+  const transcriptIdQuery = resolvedSearchParams?.transcriptId?.trim();
 
   const fromDate = fromParam ? new Date(fromParam) : undefined;
   const toDateRaw = toParam ? new Date(toParam) : undefined;
@@ -55,7 +62,16 @@ export default async function TranscriptsPage({ searchParams }: { searchParams: 
     timestampFilter.lte = toDate;
   }
 
-  const whereClause: any = {
+  type WhereClause = {
+    userId: string;
+    timestamp?: { gte?: Date; lte?: Date };
+    transcriptId?: {
+      contains: string;
+      mode: "insensitive";
+    };
+  };
+
+  const whereClause: WhereClause = {
     userId: user.id,
   };
 
@@ -117,14 +133,21 @@ export default async function TranscriptsPage({ searchParams }: { searchParams: 
                 <FileText className="h-8 w-8 text-primary" />
                 <h1 className="text-4xl font-bold">Transcripts</h1>
               </div>
-              <p className="text-muted-foreground">View and manage your call transcripts.</p>
+              <p className="text-muted-foreground">
+                View and manage your call transcripts.
+              </p>
             </div>
 
             <div className="mb-6 rounded-md border bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
-              Timestamp values may be delayed; when possible, search or filter by Transcript ID for the most reliable match.
+              Timestamp values may be delayed; when possible, search or filter
+              by Transcript ID for the most reliable match.
             </div>
 
-            <TranscriptFilters fromParam={fromParam} toParam={toParam} transcriptIdQuery={transcriptIdQuery} />
+            <TranscriptFilters
+              fromParam={fromParam}
+              toParam={toParam}
+              transcriptIdQuery={transcriptIdQuery}
+            />
 
             <Card className="shadow-card">
               <CardHeader className="flex flex-row items-center justify-between">
@@ -153,9 +176,3 @@ export default async function TranscriptsPage({ searchParams }: { searchParams: 
     </ProtectedRoute>
   );
 }
-
-
-
-
-
-

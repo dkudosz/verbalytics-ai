@@ -3,7 +3,7 @@ alwaysApply: true
 ---
 
 - Never change the visuals of the template, this includes colours and images.
-- Always use NextJS 15 with AppRouter
+- Always use NextJS 16 with AppRouter
 - Directory structure should be src/app
 - Always use TypeScript and TypeSafe
 - Always use Postgres database
