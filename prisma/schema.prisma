@@ -23,6 +23,7 @@ model User {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
   agents    Agent[]
+  transcripts Transcript[]
 
   @@map("users")
 }
@@ -39,11 +40,31 @@ model Agent {
   agentDiscord  String?  @map("agent_discord")
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
-  
+
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transcripts   Transcript[]
 
   @@unique([userId, agentId])
   @@index([userId])
   @@map("agents")
+}
+
+model Transcript {
+  id            String   @id @default(uuid())
+  userId        String   @map("user_id")
+  agentId       String   @map("agent_id")
+  transcriptId  String   @unique @map("transcript_id")
+  agentName     String   @map("agent_name")
+  agentSurname  String   @map("agent_surname")
+  timestamp     DateTime @default(now())
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  agent         Agent    @relation(fields: [agentId], references: [id])
+
+  @@index([userId])
+  @@index([agentId])
+  @@map("transcripts")
 }
 

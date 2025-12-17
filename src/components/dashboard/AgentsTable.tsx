@@ -22,7 +22,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Trash2, Loader2, Pencil } from "lucide-react";
+import { Trash2, Loader2, Pencil, Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import Link from "next/link";
 
 interface Agent {
   id: string;
@@ -268,6 +269,12 @@ export const AgentsTable = forwardRef<AgentsTableRef>((_props, ref) => {
                   <TableCell>{agent.agentDiscord || "-"}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
+                      <Button asChild variant="ghost" size="icon" className="h-8 w-8">
+                        <Link href={`/dashboard/agents/${agent.id}`} aria-label={`View ${agent.agentName}`}>
+                          <Eye className="h-4 w-4" />
+                        </Link>
+                      </Button>
+
                       <Dialog open={isEditDialogOpen && editingAgent?.id === agent.id} onOpenChange={(open) => {
                         if (!open) {
                           setIsEditDialogOpen(false);
