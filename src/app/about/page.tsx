@@ -1,9 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card";
-import ValuesGrid from "@/components/sections/about/ValuesGrid";
-import StatsBar from "@/components/sections/about/StatsBar";
+import ValuesGrid from "@/components/sections/about/values-grid";
+import StatsBar from "@/components/sections/about/stats-bar";
 import { Target, Heart, Lightbulb, Users } from "lucide-react";
 import type { Metadata } from "next";
-import { StructuredData } from "@/components/StructuredData";
+import { StructuredData } from "@/components/structured-data";
 
 export const metadata: Metadata = {
   title: "About Us - Verbalytics AI | Revolutionizing Customer Support QA",

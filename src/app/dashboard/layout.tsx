@@ -64,7 +64,9 @@ export default function DashboardLayout({
           <SidebarHeader>
             <div className="px-4 py-2">
               <Link href="/dashboard" className="block">
-                <h2 className="text-lg font-semibold hover:text-primary transition-colors">Dashboard</h2>
+                <h2 className="text-lg font-semibold hover:text-primary transition-colors">
+                  Dashboard
+                </h2>
               </Link>
             </div>
           </SidebarHeader>
@@ -128,12 +130,9 @@ export default function DashboardLayout({
           </SidebarContent>
         </Sidebar>
         <SidebarInset className="flex-1">
-          <div className="min-h-screen bg-background">
-            {children}
-          </div>
+          <div className="min-h-screen bg-background">{children}</div>
         </SidebarInset>
       </div>
     </SidebarProvider>
   );
 }
-

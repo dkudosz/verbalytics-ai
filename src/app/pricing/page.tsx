@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Check } from "lucide-react";
 import type { Metadata } from "next";
-import { StructuredData } from "@/components/StructuredData";
+import { StructuredData } from "@/components/structured-data";
 
 export const metadata: Metadata = {
   title: "Pricing - Verbalytics AI | Transparent Call Transcription Plans",

@@ -8,3 +8,4 @@ alwaysApply: true
 - Always use TypeScript and TypeSafe
 - Always use Postgres database
 - Everytime the content is edited, update the SEO as well
+- Always use kebab-case for naming files

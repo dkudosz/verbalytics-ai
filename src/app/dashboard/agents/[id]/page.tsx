@@ -1,16 +1,18 @@
 import { requireAuth, getUserWithRole } from "@/lib/auth/utils";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import ProtectedRoute from "@/components/auth/protected-route";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { GenericTable } from "@/components/dashboard/GenericTable";
+import { GenericTable } from "@/components/dashboard/generic-table";
 import type { Metadata } from "next";
 import { PrismaClient } from "@prisma/client";
+import Link from "next/link";
+import { Download, Loader2, CheckCircle } from "lucide-react";
 
 const prisma = new PrismaClient();
 
 type PageProps = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 export const metadata: Metadata = {
@@ -26,9 +28,11 @@ export default async function AgentDetailPage({ params }: PageProps) {
     return null;
   }
 
+  const resolvedParams = await params;
+
   const agent = await prisma.agent.findFirst({
     where: {
-      id: params.id,
+      id: resolvedParams.id,
       userId: user.id,
     },
   });
@@ -54,21 +58,64 @@ export default async function AgentDetailPage({ params }: PageProps) {
     );
   }
 
+  // Fetch transcripts for this agent
+  const transcripts = await prisma.transcript.findMany({
+    where: {
+      agentId: agent.id,
+      userId: user.id,
+    },
+    orderBy: {
+      timestamp: "desc",
+    },
+  });
+
+  const dateFormatter = new Intl.DateTimeFormat("en-US", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+
   const callColumns = [
     { key: "date", header: "Date" },
-    { key: "callerId", header: "Caller ID" },
-    { key: "duration", header: "Call Duration" },
-    { key: "score", header: "Score" },
-    { key: "transcript", header: "Transcript" },
+    { key: "transcriptId", header: "Transcript ID" },
+    { key: "status", header: "Status" },
+    { key: "download", header: "Download" },
   ];
 
-  const callData: Array<{
-    date: string;
-    callerId: string;
-    duration: string;
-    score: string;
-    transcript: string;
-  }> = [];
+  const callData = transcripts.map((transcript) => ({
+    date: dateFormatter.format(transcript.timestamp),
+    transcriptId: (
+      <Link
+        href={`/dashboard/transcripts?transcriptId=${encodeURIComponent(transcript.transcriptId)}`}
+        className="text-primary hover:underline font-mono text-sm"
+      >
+        {transcript.transcriptId}
+      </Link>
+    ),
+    status: transcript.status === "COMPLETED" ? (
+      <div className="flex items-center gap-2 text-green-600">
+        <CheckCircle className="h-4 w-4" />
+        <span className="text-sm">Completed</span>
+      </div>
+    ) : (
+      <div className="flex items-center gap-2 text-blue-600">
+        <Loader2 className="h-4 w-4 animate-spin" />
+        <span className="text-sm">In Progress</span>
+      </div>
+    ),
+    download: transcript.status === "COMPLETED" && transcript.downloadUrl ? (
+      <a
+        href={transcript.downloadUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-2 text-primary hover:underline"
+      >
+        <Download className="h-4 w-4" />
+        Download
+      </a>
+    ) : (
+      <span className="text-muted-foreground text-sm">N/A</span>
+    ),
+  }));
 
   return (
     <ProtectedRoute allowedRoles={["subscriber", "admin"]}>
@@ -109,19 +156,22 @@ export default async function AgentDetailPage({ params }: PageProps) {
                 <CardHeader>
                   <CardTitle>Call Statistics</CardTitle>
                 </CardHeader>
-                <CardContent className="text-sm text-muted-foreground">
-                  Call statistics coming soon.
+                <CardContent className="grid gap-3 text-sm">
+                  <div className="grid grid-cols-[120px,1fr] gap-2 items-center">
+                    <span className="text-muted-foreground">Total Calls</span>
+                    <span className="font-medium">{transcripts.length}</span>
+                  </div>
                 </CardContent>
               </Card>
             </div>
 
             <Card className="shadow-card">
               <CardHeader>
-                <CardTitle>Calls</CardTitle>
+                <CardTitle>Transcripts ({transcripts.length})</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="rounded-md border">
-                  <GenericTable columns={callColumns} data={callData} emptyMessage="No calls yet." />
+                  <GenericTable columns={callColumns} data={callData} emptyMessage="No transcripts yet." />
                 </div>
               </CardContent>
             </Card>

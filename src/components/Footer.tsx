@@ -10,17 +10,18 @@ const Footer = () => {
           {/* Brand */}
           <div>
             <h3 className="flex items-center gap-2 text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4">
-              <Image 
-                src="/verbalytics-ai-logo-main.png" 
-                alt="Verbalytics AI" 
-                width={32} 
+              <Image
+                src="/verbalytics-ai-logo-main.png"
+                alt="Verbalytics AI"
+                width={32}
                 height={32}
                 className="object-contain"
               />
               Verbalytics AI
             </h3>
             <p className="text-sm text-muted-foreground">
-              AI-powered call transcription and agent analysis for customer support teams.
+              AI-powered call transcription and agent analysis for customer
+              support teams.
             </p>
           </div>
 
@@ -29,17 +30,26 @@ const Footer = () => {
             <h4 className="font-semibold mb-4">Product</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  href="/"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
                   Features
                 </Link>
               </li>
               <li>
-                <Link href="/pricing" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  href="/pricing"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
                   Pricing
                 </Link>
               </li>
               <li>
-                <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <a
+                  href="#"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
                   Security
                 </a>
               </li>
@@ -51,17 +61,26 @@ const Footer = () => {
             <h4 className="font-semibold mb-4">Company</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  href="/about"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
                   About
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  href="/contact"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
                   Contact
                 </Link>
               </li>
               <li>
-                <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <a
+                  href="#"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
                   Careers
                 </a>
               </li>
@@ -73,12 +92,18 @@ const Footer = () => {
             <h4 className="font-semibold mb-4">Legal</h4>
             <ul className="space-y-2">
               <li>
-                <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <a
+                  href="#"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
                   Privacy Policy
                 </a>
               </li>
               <li>
-                <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <a
+                  href="#"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
                   Terms of Service
                 </a>
               </li>
@@ -91,16 +116,28 @@ const Footer = () => {
             © 2025 Verbalytics AI. All rights reserved.
           </p>
           <div className="flex gap-4 mt-4 md:mt-0">
-            <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+            <a
+              href="#"
+              className="text-muted-foreground hover:text-primary transition-colors"
+            >
               <Twitter className="h-5 w-5" />
             </a>
-            <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+            <a
+              href="#"
+              className="text-muted-foreground hover:text-primary transition-colors"
+            >
               <Facebook className="h-5 w-5" />
             </a>
-            <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+            <a
+              href="#"
+              className="text-muted-foreground hover:text-primary transition-colors"
+            >
               <Linkedin className="h-5 w-5" />
             </a>
-            <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+            <a
+              href="#"
+              className="text-muted-foreground hover:text-primary transition-colors"
+            >
               <Github className="h-5 w-5" />
             </a>
           </div>

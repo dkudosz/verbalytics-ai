@@ -16,7 +16,7 @@ import {
   SidebarInset,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
-import { Bot, Settings, FileText, UserCircle, Cog } from "lucide-react";
+import { Bot, Settings, FileText, UserCircle, Cog, HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
@@ -47,6 +47,11 @@ const accountItems = [
     title: "Settings",
     url: "/account/settings",
     icon: Cog,
+  },
+  {
+    title: "Support",
+    url: "/account/support",
+    icon: HelpCircle,
   },
 ];
 

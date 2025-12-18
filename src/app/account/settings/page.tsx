@@ -6,7 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import ProtectedRoute from "@/components/auth/protected-route";
 import {
   Dialog,
   DialogContent,

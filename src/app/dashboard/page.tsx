@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { TrendingUp, Users, DollarSign, Activity } from "lucide-react";
 import { requireAuth } from "@/lib/auth/utils";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import ProtectedRoute from "@/components/auth/protected-route";
 
 export default async function Page() {
   await requireAuth();

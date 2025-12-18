@@ -12,18 +12,26 @@ enum UserRole {
   admin
 }
 
+enum TranscriptStatus {
+  IN_PROGRESS
+  COMPLETED
+}
+
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  name      String?
-  role      UserRole @default(subscriber)
-  image     String?
-  supabaseId String  @unique @map("supabase_id")
-  metadata  Json?
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  agents    Agent[]
-  transcripts Transcript[]
+  id             String   @id @default(uuid())
+  email          String   @unique
+  name           String?
+  role           UserRole @default(subscriber)
+  image          String?
+  supabaseId     String   @unique @map("supabase_id")
+  systemToken    String?  @map("system_token")
+  oldSystemTokens Json?   @map("old_system_tokens")
+  metadata       Json?
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+  agents         Agent[]
+  transcripts    Transcript[]
+  scripts        Script[]
 
   @@map("users")
 }
@@ -50,21 +58,37 @@ model Agent {
 }
 
 model Transcript {
-  id            String   @id @default(uuid())
-  userId        String   @map("user_id")
-  agentId       String   @map("agent_id")
-  transcriptId  String   @unique @map("transcript_id")
-  agentName     String   @map("agent_name")
-  agentSurname  String   @map("agent_surname")
-  timestamp     DateTime @default(now())
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+  id            String           @id @default(uuid())
+  userId        String           @map("user_id")
+  agentId       String           @map("agent_id")
+  transcriptId  String           @unique @map("transcript_id")
+  agentName     String           @map("agent_name")
+  agentSurname  String           @map("agent_surname")
+  downloadUrl   String?          @map("download_url")
+  status        TranscriptStatus @default(IN_PROGRESS)
+  timestamp     DateTime         @default(now())
+  createdAt     DateTime         @default(now()) @map("created_at")
+  updatedAt     DateTime         @updatedAt @map("updated_at")
 
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  agent         Agent    @relation(fields: [agentId], references: [id])
+  user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  agent         Agent            @relation(fields: [agentId], references: [id])
 
   @@index([userId])
   @@index([agentId])
   @@map("transcripts")
+}
+
+model Script {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  scriptName  String   @map("script_name")
+  scriptText  String   @map("script_text")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("scripts")
 }
 

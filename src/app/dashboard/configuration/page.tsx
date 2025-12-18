@@ -1,17 +1,27 @@
 import { requireAuth } from "@/lib/auth/utils";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import ProtectedRoute from "@/components/auth/protected-route";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Settings } from "lucide-react";
 import type { Metadata } from "next";
+import { ScriptsTable } from "@/components/dashboard/scripts-table";
+import { SystemTokenDisplay } from "@/components/dashboard/system-token-display";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export const metadata: Metadata = {
   title: "Configuration | Dashboard | Verbalytics AI",
   description:
-    "Configure Verbalytics AI webhook settings, including endpoint, authentication, payload, and expected responses.",
+    "Configure Verbalytics AI webhook settings, manage scripts, including endpoint, authentication, payload, and expected responses.",
   openGraph: {
     title: "Configuration | Dashboard | Verbalytics AI",
     description:
-      "Configure Verbalytics AI webhook settings, including endpoint, authentication, payload, and expected responses.",
+      "Configure Verbalytics AI webhook settings, manage scripts, including endpoint, authentication, payload, and expected responses.",
   },
   alternates: {
     canonical: "https://verbalytics.ai/dashboard/configuration",
@@ -32,7 +42,7 @@ export default async function ConfigurationPage() {
                 <h1 className="text-4xl font-bold">Configuration</h1>
               </div>
               <p className="text-muted-foreground">
-                Configure your webhook settings and authentication details.
+                Configure your webhook settings, authentication details, and manage scripts.
               </p>
             </div>
 
@@ -61,24 +71,86 @@ export default async function ConfigurationPage() {
                       <p className="font-mono text-sm">POST</p>
                     </div>
                     <div>
-                      <p className="font-medium text-foreground">Auth Header</p>
-                      <p className="text-sm">
+                      <p className="font-medium text-foreground mb-2">Auth Header</p>
+                      <p className="text-sm mb-4">
                         <span className="font-mono text-foreground">
-                          Authorization: Bearer {"<user-token>"}
+                          Authorization: Bearer {"<system-token>"}
                         </span>
                         <br />
-                        Token is generated for each user at signup.
+                        <span className="text-muted-foreground">
+                          Token is generated for each user. Use the System Token section below to generate or regenerate your token.
+                        </span>
                       </p>
                     </div>
                   </div>
 
                   <div>
-                    <p className="font-medium text-foreground">Request Body</p>
-                    <pre className="bg-muted/70 rounded-lg p-4 text-sm font-mono overflow-x-auto text-foreground">
+                    <p className="font-medium text-foreground mb-2">Request Body</p>
+                    <pre className="bg-muted/70 rounded-lg p-4 text-sm font-mono overflow-x-auto text-foreground mb-4">
                       {`{
-  "agentId": "string"
+  "agentId": "string",
+  "file": "string",
+  "callDate": "string",
+  "scriptId": "string | null"
 }`}
                     </pre>
+                    <div className="rounded-md border">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Parameter</TableHead>
+                            <TableHead>Type</TableHead>
+                            <TableHead>Description</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          <TableRow>
+                            <TableCell className="font-medium font-mono text-sm">
+                              agentId
+                            </TableCell>
+                            <TableCell className="font-mono text-sm text-muted-foreground">
+                              string
+                            </TableCell>
+                            <TableCell className="text-sm">
+                              The unique identifier of the agent associated with the transcription request.
+                            </TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="font-medium font-mono text-sm">
+                              file
+                            </TableCell>
+                            <TableCell className="font-mono text-sm text-muted-foreground">
+                              string
+                            </TableCell>
+                            <TableCell className="text-sm">
+                              The file path or identifier of the audio/video file to be transcribed.
+                            </TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="font-medium font-mono text-sm">
+                              callDate
+                            </TableCell>
+                            <TableCell className="font-mono text-sm text-muted-foreground">
+                              string
+                            </TableCell>
+                            <TableCell className="text-sm">
+                              The date and time when the call was made, typically in ISO 8601 format.
+                            </TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="font-medium font-mono text-sm">
+                              scriptId
+                            </TableCell>
+                            <TableCell className="font-mono text-sm text-muted-foreground">
+                              string | null
+                            </TableCell>
+                            <TableCell className="text-sm">
+                              Optional identifier of the script to be used for this transcription. Can be null if no script is associated.
+                            </TableCell>
+                          </TableRow>
+                        </TableBody>
+                      </Table>
+                    </div>
                   </div>
 
                   <div>
@@ -110,6 +182,14 @@ export default async function ConfigurationPage() {
                 </div>
               </CardContent>
             </Card>
+
+            <div className="mt-6">
+              <SystemTokenDisplay />
+            </div>
+
+            <div className="mt-6">
+              <ScriptsTable />
+            </div>
           </div>
         </main>
       </div>

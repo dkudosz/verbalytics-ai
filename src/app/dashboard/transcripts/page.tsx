@@ -1,23 +1,23 @@
 import Link from "next/link";
 import { requireAuth, getUserWithRole } from "@/lib/auth/utils";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import ProtectedRoute from "@/components/auth/protected-route";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { GenericTable } from "@/components/dashboard/GenericTable";
-import { FileText, Clock3, IdCard } from "lucide-react";
+import { GenericTable } from "@/components/dashboard/generic-table";
+import { FileText, Clock3, IdCard, Download, Loader2, CheckCircle } from "lucide-react";
 import { PrismaClient } from "@prisma/client";
 import type { Metadata } from "next";
-import { TranscriptFilters } from "./TranscriptFilters";
+import { TranscriptFilters } from "./transcript-filters";
 
 const prisma = new PrismaClient();
 
 export const metadata: Metadata = {
   title: "Transcripts | Dashboard | Verbalytics AI",
   description:
-    "Browse and filter your call transcripts by date range or Transcript ID.",
+    "Browse, filter, and download your call transcripts by date range or Transcript ID.",
   openGraph: {
     title: "Transcripts | Dashboard | Verbalytics AI",
     description:
-      "Browse and filter your call transcripts by date range or Transcript ID.",
+      "Browse, filter, and download your call transcripts by date range or Transcript ID.",
   },
   alternates: {
     canonical: "https://verbalytics.ai/dashboard/transcripts",
@@ -103,6 +103,8 @@ export default async function TranscriptsPage({
     { key: "timestamp", header: "Timestamp" },
     { key: "transcriptId", header: "Transcript ID" },
     { key: "agent", header: "Agent" },
+    { key: "status", header: "Status" },
+    { key: "download", header: "Download" },
   ];
 
   const tableData = transcripts.map((transcript) => ({
@@ -120,6 +122,30 @@ export default async function TranscriptsPage({
           View agent details
         </Link>
       </div>
+    ),
+    status: transcript.status === "COMPLETED" ? (
+      <div className="flex items-center gap-2 text-green-600">
+        <CheckCircle className="h-4 w-4" />
+        <span className="text-sm">Completed</span>
+      </div>
+    ) : (
+      <div className="flex items-center gap-2 text-blue-600">
+        <Loader2 className="h-4 w-4 animate-spin" />
+        <span className="text-sm">In Progress</span>
+      </div>
+    ),
+    download: transcript.status === "COMPLETED" && transcript.downloadUrl ? (
+      <a
+        href={transcript.downloadUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-2 text-primary hover:underline"
+      >
+        <Download className="h-4 w-4" />
+        Download
+      </a>
+    ) : (
+      <span className="text-muted-foreground text-sm">N/A</span>
     ),
   }));
 

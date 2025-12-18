@@ -1,8 +1,8 @@
 import { requireAuth } from "@/lib/auth/utils";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import ProtectedRoute from "@/components/auth/protected-route";
 import { Bot } from "lucide-react";
 import type { Metadata } from "next";
-import { CsvUploadWrapper } from "@/components/dashboard/CsvUploadWrapper";
+import { CsvUploadWrapper } from "@/components/dashboard/csv-upload-wrapper";
 
 export const metadata: Metadata = {
   title: "Agents | Dashboard | Verbalytics AI",

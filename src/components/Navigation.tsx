@@ -35,11 +35,14 @@ const Navigation = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-            <Image 
-              src="/verbalytics-ai-logo-main.png" 
-              alt="Verbalytics AI" 
-              width={32} 
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent"
+          >
+            <Image
+              src="/verbalytics-ai-logo-main.png"
+              alt="Verbalytics AI"
+              width={32}
               height={32}
               className="object-contain"
             />
@@ -82,7 +85,11 @@ const Navigation = () => {
             className="md:hidden p-2"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            {mobileMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
           </button>
         </div>
 
@@ -104,10 +111,19 @@ const Navigation = () => {
               ))}
               {user ? (
                 <>
-                  <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
-                    <Button variant="ghost" className="w-full justify-start">Dashboard</Button>
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Button variant="ghost" className="w-full justify-start">
+                      Dashboard
+                    </Button>
                   </Link>
-                  <Button variant="outline" className="w-full" onClick={handleSignOut}>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={handleSignOut}
+                  >
                     Sign Out
                   </Button>
                 </>

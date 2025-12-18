@@ -1,8 +1,8 @@
 "use client";
 
 import { useRef } from "react";
-import { CsvUpload } from "./CsvUpload";
-import { AgentsTable, AgentsTableRef } from "./AgentsTable";
+import { CsvUpload } from "./csv-upload";
+import { AgentsTable, AgentsTableRef } from "./agents-table";
 
 export function CsvUploadWrapper() {
   const refreshTableRef = useRef<AgentsTableRef>(null);

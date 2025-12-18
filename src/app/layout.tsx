@@ -1,12 +1,13 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import Providers from "./providers";
-import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer";
+import Navigation from "@/components/navigation";
+import Footer from "@/components/footer";
 
 export const metadata: Metadata = {
   title: "Verbalytics AI",
-  description: "AI-powered call transcription and agent analysis for customer support teams. Automatically transcribe calls, analyze agent performance, and get actionable insights.",
+  description:
+    "AI-powered call transcription and agent analysis for customer support teams. Automatically transcribe calls, analyze agent performance, and get actionable insights.",
 };
 
 export default function RootLayout({
@@ -26,5 +27,3 @@ export default function RootLayout({
     </html>
   );
 }
-
-
