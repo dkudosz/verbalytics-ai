@@ -1,16 +1,93 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { TrendingUp, Users, DollarSign, Activity } from "lucide-react";
-import { requireAuth } from "@/lib/auth/utils";
+import { TrendingUp, Users, FileText, CreditCard } from "lucide-react";
+import { requireAuth, getUserWithRole } from "@/lib/auth/utils";
 import ProtectedRoute from "@/components/auth/protected-route";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 export default async function Page() {
   await requireAuth();
+  const user = await getUserWithRole();
+
+  if (!user) {
+    return null;
+  }
+
+  // Fetch total agents count for the current user
+  const totalAgents = await prisma.agent.count({
+    where: {
+      userId: user.id,
+    },
+  });
+
+  // Fetch total completed transcripts count for the current user
+  const totalCompletedTranscripts = await prisma.transcript.count({
+    where: {
+      userId: user.id,
+      status: "COMPLETED",
+    },
+  });
+
+  // Get user subscription info from metadata or use defaults
+  const fullUser = await prisma.user.findUnique({
+    where: { id: user.id },
+    select: {
+      metadata: true,
+      createdAt: true,
+      role: true,
+    },
+  });
+
+  const metadata = (fullUser?.metadata as Record<string, any> | null) || {};
+  const subscriptionPlan = metadata?.subscription?.plan || "Professional";
+  const billingCycle = metadata?.subscription?.billingCycle || "Monthly";
+  const subscriptionStartDate = metadata?.subscription?.startDate 
+    ? new Date(metadata.subscription.startDate)
+    : fullUser?.createdAt || new Date();
+  
+  // Calculate next renewal date (assuming monthly billing)
+  // Start from the subscription start date and find the next renewal
+  const now = new Date();
+  let nextRenewalDate = new Date(subscriptionStartDate);
+  
+  // Keep adding months until we get a future date
+  while (nextRenewalDate <= now) {
+    nextRenewalDate.setMonth(nextRenewalDate.getMonth() + 1);
+  }
+  
+  // Format renewal date
+  const renewalDateFormatted = nextRenewalDate.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 
   const stats = [
-    { icon: Users, label: "Total Users", value: "2,543", change: "+12.5%" },
-    { icon: DollarSign, label: "Revenue", value: "$45,231", change: "+8.2%" },
-    { icon: Activity, label: "Active Sessions", value: "892", change: "+3.1%" },
-    { icon: TrendingUp, label: "Growth", value: "23.4%", change: "+2.4%" },
+    { 
+      icon: Users, 
+      label: "Total Agents", 
+      value: totalAgents.toString(), 
+      change: null 
+    },
+    { 
+      icon: FileText, 
+      label: "Total Completed Transcripts", 
+      value: totalCompletedTranscripts.toString(), 
+      change: null 
+    },
+    { 
+      icon: CreditCard, 
+      label: "Current Subscription", 
+      value: `${subscriptionPlan} (${billingCycle})`,
+      change: `Renews ${renewalDateFormatted}`,
+    },
+    { 
+      icon: TrendingUp, 
+      label: "Growth", 
+      value: "23.4%", 
+      change: "+2.4%" 
+    },
   ];
 
   return (
@@ -31,7 +108,11 @@ export default async function Page() {
                       <div className="h-10 w-10 bg-gradient-primary rounded-lg flex items-center justify-center">
                         <stat.icon className="h-5 w-5 text-primary-foreground" />
                       </div>
-                      <span className="text-sm font-medium text-green-600">{stat.change}</span>
+                      {stat.change && (
+                        <span className={`text-sm font-medium ${stat.change.startsWith("+") ? "text-green-600" : "text-muted-foreground"}`}>
+                          {stat.change}
+                        </span>
+                      )}
                     </div>
                     <p className="text-sm text-muted-foreground mb-1">{stat.label}</p>
                     <p className="text-2xl font-bold">{stat.value}</p>
