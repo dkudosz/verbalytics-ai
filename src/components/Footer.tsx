@@ -8,6 +8,7 @@ const Footer = () => {
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
+          {/* TODO: Add the brand */}
           <div>
             <h3 className="flex items-center gap-2 text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4">
               <Image
